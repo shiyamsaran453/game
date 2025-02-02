@@ -4,21 +4,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        body{
+            background-color: black;
+        }
         .container{
             display: flex;
             justify-content: center;
             align-items: center;
+            color: white;
         }
         .circle{
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background-color: red;
+            background-color: gray;
             margin: 10px;
-            border:2px solid black;
+            border:2px solid white;
             background-size: cover;
         }
         #timer{
+            color: white;
             text-align: center;
             display: flex;
             justify-content: center;
@@ -26,6 +31,7 @@
             font-size: 20px;
         }
         #scoreboard{
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -54,6 +60,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+        #RETRY{
+            background-color: rgb(255, 219, 14);
+            color: black;
+            display: none;
+        }
+        #level{
+            background-color: rgb(255, 219, 14);
+            color: black;
+            display: none;
+
         }
     </style>
 
@@ -61,18 +79,20 @@
 <body>
     <div id="difficulty" >
         <div id="buttons">
-            
-
-        <button onclick="select(1),diable_button()">EASY</button>
-        <button onclick="select(2), diable_button()">MEDIUM</button>
-        <button onclick="select(3) ,diable_button()">HARD</button>
+        <button onclick="select(1),diable_button(0),startTimer()">EASY</button>
+        <button onclick="select(2), diable_button(0),startTimer()">MEDIUM</button>
+        <button onclick="select(3) ,diable_button(0),startTimer()">HARD</button>
     </div>
+    <button id="RETRY" class="after" onclick="retry()"> RETRY </button> <br>
+    <button id="level" class="after" onclick="location.reload()" >CHANGE_LEVEL</button>
+
+
     </div>
     <div id="scoreboard">
         <h1 id="name"></h1>
         <h1> Score <span id="score">0</span></h1>
     
-    <h1><p id="timer">60</p></h1>
+    <h1><p id="timer"></p></h1>
     </div>
     <div class="container">
     <div id="top " class="row">
@@ -104,52 +124,73 @@
     var audio_2=new Audio('sonnamutha.mp3')
     var audio_3=new Audio('arasiyal.mp3')
     var audio_4=new Audio('katham.mp3')
-    var name=prompt('Enter your name');
+    vikram.volume=0.5;
 
-    alert('RULES \n Click on the green circle to increase \n your score You have 30 seconds to play \nget more than 10 mars to win\n Good luck!',);
+   // var name=prompt('Enter your name');
+    var customCursorArea = document.getElementsByClassName('.circle');
+
+
+    alert('RULES \n Click on the green circle to increase \n your score You have 30 seconds to play \nget more than 10 marks to win\n Good luck!',);
     document.getElementById('name').innerText=name;
-
+    let timeLeft = 30; // 60 seconds
     var score=0;
     let topRow = document.getElementById('top');
     let middleRow = document.getElementById('middle');
     let bottomRow = document.getElementById('bottom');
     let circles = document.querySelectorAll('.circle');
+    var retry_game;
+
     function select(select){
         let selection=select;
         if(selection==1){
             timmer(1000);
+            retry_game=1;
             vikram.play();
 
         }
         else if(selection==2){
             timmer(500);
+            retry_game=2;
             vikram.play();
 
         }
         else{
             timmer(250);
+            retry_game=3;
             vikram.play();
 
         }
 
 
     }
+
+
+const timerElement = document.getElementById('timer');   
+function startTimer() {
+    setInterval(()=>{
+        timeLeft--;
+    },1000)
+}
+
     
 
 
 function timmer(option){
-    let timeLeft = 30; // 60 seconds
-    const timerElement = document.getElementById('timer');
+
 
     const countdown = setInterval(() => {
         if (timeLeft <= 0) {
             clearInterval(countdown);
             timerElement.innerText = "Time's up!";
+            
             if(score <=10 && option===1000){
                 if(timerElement.innerText==="Time's up!"){
                     vikram.pause();
                 }
                 audio_1.play()
+                document.getElementById('RETRY').style.display='block';
+                document.getElementById('level').style.display='block';
+
 
             }
             else if(score <=10 && option===500 ){
@@ -157,6 +198,10 @@ function timmer(option){
                     vikram.pause();
                 }
                 audio_3.play()
+                document.getElementById('RETRY').style.display='block';
+                document.getElementById('level').style.display='block';
+
+
 
             }
             else if(score <=10 && option===250 ){
@@ -165,18 +210,26 @@ function timmer(option){
                     vikram.pause();
                 }
                 audio_2.play()
+                document.getElementById('RETRY').style.display='block';
+                document.getElementById('level').style.display='block';
+
+
 
             }
             else{
                 document.getElementById('name').innerText=name+' You won';
                 audio_4.play();
+                document.getElementById('RETRY').style.display='block';
+                document.getElementById('level').style.display='block';
+
+
                
 
 
             }
         } else {
             timerElement.innerText = timeLeft;
-            timeLeft--;
+
         }
         if(timeLeft%2==0){
             let rand=Math.random()*9;
@@ -185,7 +238,7 @@ function timmer(option){
         }
         else{
             for(let i=0;i<circles.length;i++){
-                circles[i].style.backgroundColor='red'; }
+                circles[i].style.backgroundColor='gray'; }
         }
          
     }, option);
@@ -205,7 +258,7 @@ function timmer(option){
     function click(event){
         const intervals=event.target;
         if (intervals.style.backgroundImage==='url("rat.jpg")'){
-                intervals.style.backgroundImage=URL='url("rat_dead.jpg")';
+                intervals.style.backgroundImage='url("rat_dead.jpg")';
                 audio.play();
                 score+=1;
                 document.getElementById('score').innerText=score;
@@ -214,13 +267,41 @@ function timmer(option){
 
 
         }
-    function diable_button(){
+    function diable_button(entry){
+    if(entry==0){
         document.getElementById('buttons').style.display='none';
-        if(timeLeft==0){
-            document.getElementById('buttons').style.display='block';
-        }
     }
-   // window.onload=name_audio.play();
+
+    }
+function retry(){
+    if(retry_game===1){
+        score=0;
+        timeLeft=30;
+        timerElement.innerText=timeLeft;
+        audio_1.pause();
+        vikram.load();
+        select(1);
+    }
+    else if(retry_game==2){
+        score=0;
+        timeLeft=30;
+        timerElement.innerText=timeLeft;
+        audio_3.pause();
+        vikram.load();
+
+        select(2);
+    }
+    else{
+        score=0;
+        timeLeft=30;
+        timerElement.innerText=timeLeft;
+        audio_2.pause();
+        vikram.load();
+
+        select(3);
+    }
+}
+
 
 
     
